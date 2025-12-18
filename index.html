@@ -273,10 +273,12 @@
         .card-header h4 { margin: 0; font-size: 1.1rem; color: var(--text-main); }
         .card-meta { font-size: 0.8rem; color: var(--text-muted); font-style: italic; margin-bottom: 15px; }
 
-        .guidance-text { font-size: 0.9rem; color: var(--text-main); flex-grow: 1; }
-        .guidance-text strong { color: var(--primary); }
+        .guidance-text { font-size: 0.85rem; color: var(--text-main); flex-grow: 1; }
+        .guidance-text strong { color: var(--primary); font-weight: 600; }
+        .guidance-text ul { padding-left: 20px; margin: 5px 0 15px 0; }
+        .guidance-text li { margin-bottom: 4px; }
         
-        .g2-only { display: none; background: rgba(245, 158, 11, 0.1); padding: 5px; border-radius: 4px; margin-top: 5px; }
+        .g2-only { display: none; background: rgba(245, 158, 11, 0.1); padding: 10px; border-radius: 4px; margin-top: 5px; }
         .g1-only { display: block; }
         
         /* When Group 2 is Active */
@@ -435,7 +437,6 @@
             <a href="#neuro">Neurology</a>
             <a href="#cardio">Cardiology</a>
             <a href="#endo">Endocrine</a>
-            <a href="#psych">Psychiatric</a>
             <a href="#drugs">Substances</a>
         </div>
     </nav>
@@ -447,7 +448,7 @@
             
             <div class="search-container">
                 <span class="search-icon">🔍</span>
-                <input type="text" class="search-input" id="searchInput" placeholder="Search diagnosis (e.g. Seizure, MI, Syncope)..." onkeyup="filterContent()">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search diagnosis (e.g. Seizure, TIA, Syncope)..." onkeyup="filterContent()">
             </div>
         </header>
 
@@ -466,18 +467,24 @@
             
             <div class="card" data-status="stop" data-g2-ban="true">
                 <div class="card-header">
-                    <h4>Seizures</h4>
+                    <h4>Seizures / Epilepsy</h4>
                 </div>
-                <div class="card-meta">Epilepsy, First Fit, Provoked</div>
+                <div class="card-meta">First Fit, Provoked, Epilepsy</div>
                 <div class="guidance-text">
                     <div class="g1-only">
-                        <p><strong>First Unprovoked:</strong> Stop driving 12 months.</p>
-                        <p><strong>Provoked:</strong> Stop driving 6 months (if provoked by acute illness/meds).</p>
-                        <p><strong>Epilepsy:</strong> Must be seizure-free for 1 year to drive.</p>
+                        <ul>
+                            <li><strong>First Unprovoked:</strong> Stop driving 6 months (if normal EEG/Scan) or 12 months (standard).</li>
+                            <li><strong>Epilepsy (2+ seizures):</strong> Stop driving 12 months seizure-free.</li>
+                            <li><strong>Provoked:</strong> Stop driving 6 months (e.g., related to acute illness).</li>
+                            <li><strong>Sleep Only:</strong> Allowed if pattern established for 1 year.</li>
+                        </ul>
                     </div>
                     <div class="g2-only">
-                        <p><strong>First Unprovoked:</strong> Stop driving 5 years (unless specific criteria met).</p>
-                        <p><strong>Epilepsy:</strong> Must be seizure-free for 10 years without medication.</p>
+                        <ul>
+                            <li><strong>First Unprovoked:</strong> Stop driving 5 years. (Must be seizure-free and off meds).</li>
+                            <li><strong>Epilepsy:</strong> Stop driving 10 years. (Must be seizure-free and off meds for 10 years).</li>
+                            <li><strong>Provoked:</strong> DVLA assessment required. Likely 6 months minimum.</li>
+                        </ul>
                     </div>
                 </div>
                 <button class="btn-action" onclick="openLetter('seizure')">📄 Generate Discharge Letter</button>
@@ -485,19 +492,24 @@
 
             <div class="card" data-status="warn">
                 <div class="card-header">
-                    <h4>Blackout / Syncope</h4>
+                    <h4>Blackout / Syncope (TLoC)</h4>
                 </div>
-                <div class="card-meta">TLoC, Vasovagal, Cough Syncope</div>
+                <div class="card-meta">Vasovagal, Unexplained, Cough Syncope</div>
                 <div class="guidance-text">
                     <div class="g1-only">
-                        <p><strong>Simple Faint (Vasovagal):</strong> Allowed if distinct prodrome & trigger. No driving restriction.</p>
-                        <p><strong>Unexplained:</strong> Stop driving 6 months.</p>
-                        <p><strong>Cough Syncope:</strong> Stop driving 6 months.</p>
+                        <ul>
+                            <li><strong>Simple Faint (Vasovagal):</strong> Allowed if distinct prodrome (warning) & known trigger. No restriction ("3 P's" - Posture, Provocation, Prodrome).</li>
+                            <li><strong>Unexplained (Low Risk):</strong> Stop driving 6 months.</li>
+                            <li><strong>Unexplained (High Risk):</strong> Stop driving 6 months (or 4 weeks if cause treated).</li>
+                            <li><strong>Cough Syncope:</strong> Stop driving 6 months.</li>
+                        </ul>
                     </div>
                     <div class="g2-only">
-                        <p><strong>Simple Faint:</strong> Allowed if distinct prodrome.</p>
-                        <p><strong>Unexplained:</strong> Stop driving 12 months.</p>
-                        <p><strong>Cough Syncope:</strong> Stop driving 12 months.</p>
+                        <ul>
+                            <li><strong>Simple Faint:</strong> Allowed if distinct prodrome.</li>
+                            <li><strong>Unexplained:</strong> Stop driving 12 months (strict).</li>
+                            <li><strong>Cough Syncope:</strong> Stop driving 12 months.</li>
+                        </ul>
                     </div>
                 </div>
                 <button class="btn-action" onclick="openLetter('tloc')">📄 Generate Discharge Letter</button>
@@ -505,15 +517,23 @@
 
             <div class="card" data-status="stop">
                 <div class="card-header">
-                    <h4>Stroke / TIA</h4>
+                    <h4>Stroke & TIA</h4>
                 </div>
-                <div class="card-meta">CVA, Mini-stroke</div>
+                <div class="card-meta">CVA, Mini-stroke, Amaurosis Fugax</div>
                 <div class="guidance-text">
                     <div class="g1-only">
-                        <p><strong>TIA/Stroke:</strong> Stop driving 1 month. No need to notify DVLA unless residual deficit after 1 month.</p>
+                        <ul>
+                            <li><strong>Single TIA:</strong> Stop driving 1 month. DO NOT notify DVLA.</li>
+                            <li><strong>Multiple TIAs:</strong> Stop driving 1 month. Notify DVLA if recurrent.</li>
+                            <li><strong>Stroke:</strong> Stop driving 1 month. Notify DVLA <em>only if</em> residual deficit (visual/cognitive) persists >1 month.</li>
+                        </ul>
                     </div>
                     <div class="g2-only">
-                        <p><strong>TIA/Stroke:</strong> Stop driving 1 year. Must notify DVLA. Requires functional assessment.</p>
+                        <ul>
+                            <li><strong>All Stroke/TIA:</strong> Stop driving 1 year.</li>
+                            <li><strong>Notification:</strong> You MUST notify DVLA.</li>
+                            <li><strong>Re-licensing:</strong> Requires functional assessment and no significant deficit.</li>
+                        </ul>
                     </div>
                 </div>
                 <button class="btn-action" onclick="openLetter('stroke')">📄 Generate Discharge Letter</button>
@@ -528,17 +548,24 @@
             
             <div class="card" data-status="stop">
                 <div class="card-header">
-                    <h4>ACS (MI / Angina)</h4>
+                    <h4>ACS / Angina / Angioplasty</h4>
                 </div>
-                <div class="card-meta">Heart Attack, Stent, Angioplasty</div>
+                <div class="card-meta">MI, NSTEMI, Stent</div>
                 <div class="guidance-text">
                     <div class="g1-only">
-                        <p><strong>Angioplasty (Stent):</strong> Stop driving 1 week.</p>
-                        <p><strong>No Angioplasty:</strong> Stop driving 4 weeks.</p>
-                        <p><em>Notify DVLA only if angina persists.</em></p>
+                        <ul>
+                            <li><strong>Angioplasty (Stent):</strong> Stop driving 1 week (if successful).</li>
+                            <li><strong>No Angioplasty:</strong> Stop driving 4 weeks.</li>
+                            <li><strong>Angina:</strong> Must not drive if symptoms occur at rest or while driving.</li>
+                            <li><strong>Notify DVLA:</strong> Only if symptoms persist or restart.</li>
+                        </ul>
                     </div>
                     <div class="g2-only">
-                        <p><strong>All ACS:</strong> Stop driving at least 6 weeks. Must notify DVLA. Requires functional test (LVEF ≥40%).</p>
+                        <ul>
+                            <li><strong>All Events:</strong> Stop driving 6 weeks minimum.</li>
+                            <li><strong>Requirement:</strong> Functional test (LVEF ≥40%) required before restart.</li>
+                            <li><strong>Notification:</strong> MUST notify DVLA.</li>
+                        </ul>
                     </div>
                 </div>
                 <button class="btn-action" onclick="openLetter('acs')">📄 Generate Discharge Letter</button>
@@ -546,19 +573,23 @@
 
             <div class="card" data-status="warn">
                 <div class="card-header">
-                    <h4>Arrhythmia / Pacemaker</h4>
+                    <h4>Arrhythmia / Devices</h4>
                 </div>
-                <div class="card-meta">AF, SVT, ICD</div>
+                <div class="card-meta">AF, Pacemaker, ICD</div>
                 <div class="guidance-text">
                     <div class="g1-only">
-                        <p><strong>Arrhythmia:</strong> Stop 4 weeks if incapacitated.</p>
-                        <p><strong>Pacemaker:</strong> Stop 1 week.</p>
-                        <p><strong>ICD (Defib):</strong> Stop 6 months (Shock/Implant).</p>
+                        <ul>
+                            <li><strong>Pacemaker:</strong> Stop driving 1 week post-implant.</li>
+                            <li><strong>ICD (Defib):</strong> Stop 6 months (if for shock/therapy). Stop 1 month (if prophylactic).</li>
+                            <li><strong>Arrhythmia:</strong> Stop 4 weeks if it caused incapacity/syncope.</li>
+                        </ul>
                     </div>
                     <div class="g2-only">
-                        <p><strong>Arrhythmia:</strong> Stop until controlled (min 4 weeks).</p>
-                        <p><strong>Pacemaker:</strong> Stop 6 weeks.</p>
-                        <p><strong>ICD:</strong> <strong>Permanent Bar</strong> from Group 2.</p>
+                        <ul>
+                            <li><strong>Pacemaker:</strong> Stop driving 6 weeks.</li>
+                            <li><strong>ICD (Defib):</strong> <strong>PERMANENT BAR</strong> (Licence Refused/Revoked).</li>
+                            <li><strong>Arrhythmia:</strong> Stop until controlled (min 4 weeks) & LVEF ≥40%.</li>
+                        </ul>
                     </div>
                 </div>
                 <button class="btn-action" onclick="openLetter('arrhythmia')">📄 Generate Discharge Letter</button>
@@ -576,11 +607,17 @@
                 <div class="card-meta">Insulin, Sulfonylureas, Hypo</div>
                 <div class="guidance-text">
                     <div class="g1-only">
-                        <p><strong>Insulin:</strong> Notify DVLA. Check BM q2h while driving.</p>
-                        <p><strong>Severe Hypo:</strong> Stop driving if >1 episode in 12 months.</p>
+                        <ul>
+                            <li><strong>Insulin:</strong> Notify DVLA. Must test blood sugar q2h while driving.</li>
+                            <li><strong>Tablets:</strong> No restriction usually (unless prone to severe hypos).</li>
+                            <li><strong>Severe Hypo:</strong> Stop driving if >1 episode in 12 months (awake).</li>
+                        </ul>
                     </div>
                     <div class="g2-only">
-                        <p><strong>Insulin:</strong> Strict criteria. Must provide 6 weeks of glucose logs. Must notify DVLA.</p>
+                        <ul>
+                            <li><strong>Insulin:</strong> Notify DVLA. Strict annual review. Must use finger-prick glucose (not just Flash/CGM) for driving logs.</li>
+                            <li><strong>Hypoglycaemia:</strong> Full awareness required. No severe hypos in 12 months.</li>
+                        </ul>
                     </div>
                 </div>
                 <button class="btn-action" onclick="openLetter('diabetes')">📄 Generate Discharge Letter</button>
@@ -595,15 +632,21 @@
                 <div class="card-header">
                     <h4>Alcohol & Drugs</h4>
                 </div>
-                <div class="card-meta">Dependence, Misuse</div>
+                <div class="card-meta">Dependence vs Misuse</div>
                 <div class="guidance-text">
-                    <p><strong>Alcohol/Drug Misuse:</strong> Stop driving immediately.</p>
                     <div class="g1-only">
-                        <p>Requires 6-12 months abstinence/control before re-licensing.</p>
+                        <ul>
+                            <li><strong>Persistent Misuse:</strong> Stop driving 6 months min.</li>
+                            <li><strong>Dependence:</strong> Stop driving 1 year min.</li>
+                        </ul>
                     </div>
                     <div class="g2-only">
-                        <p>Requires 1-3 years abstinence before re-licensing.</p>
+                        <ul>
+                            <li><strong>Persistent Misuse:</strong> Stop driving 1 year min.</li>
+                            <li><strong>Dependence:</strong> Stop driving 3 years min.</li>
+                        </ul>
                     </div>
+                    <p style="font-size: 0.8em; margin-top:5px;"><em>"Misuse" = adverse consequences. "Dependence" = addiction/withdrawal.</em></p>
                 </div>
                 <button class="btn-action" onclick="openLetter('substance')">📄 Generate Discharge Letter</button>
             </div>
@@ -652,31 +695,73 @@
         const templates = {
             seizure: {
                 title: "Fitness to Drive - Seizure",
-                content: (g) => `Following your assessment for a seizure/fit:\n\nMEDICAL ADVICE:\nYou must NOT drive at this time.\n\nDVLA RULES (${g === 1 ? 'CAR' : 'LORRY/BUS'}):\n${g === 1 ? '- First Seizure: Stop driving for 12 months.\n- Provoked Seizure: Stop driving for 6 months.' : '- First Seizure: Stop driving for 5 years.\n- Provoked Seizure: Stop driving for up to 5 years.'}\n\nLEGAL REQUIREMENT:\nYou must notify the DVLA of your condition. Failure to do so is a criminal offence and invalidates your insurance.`
+                content: (g) => {
+                    if (g === 1) {
+                        return `MEDICAL DIAGNOSIS: Seizure / Epilepsy\n\nFITNESS TO DRIVE ADVICE (GROUP 1 - CAR):\n1. You must STOP driving immediately.\n2. You are legally required to notify the DVLA of your condition.\n\nTIMELINES:\n- First Unprovoked Seizure: You must not drive for 6 months (if scans are normal) or 12 months (standard).\n- Established Epilepsy: You must be seizure-free for 1 year before re-licensing.\n- Provoked Seizure: You must not drive for 6 months (pending medical advice).\n\nACTION:\nDo not drive until the DVLA confirms your licence is valid. Failure to notify the DVLA is a criminal offence and invalidates your insurance.`;
+                    } else {
+                        return `MEDICAL DIAGNOSIS: Seizure / Epilepsy\n\nFITNESS TO DRIVE ADVICE (GROUP 2 - HGV/BUS):\n1. You must STOP driving immediately.\n2. You are legally required to notify the DVLA.\n\nTIMELINES:\n- First Seizure: You are likely barred from Group 2 driving for 5 years.\n- Epilepsy: You are likely barred for 10 years (must be 10 years off medication).\n\nACTION:\nNotify your employer and the DVLA immediately.`;
+                    }
+                }
             },
             tloc: {
                 title: "Fitness to Drive - Blackout",
-                content: (g) => `Following your assessment for a blackout (syncope):\n\nMEDICAL ADVICE:\nDo not drive until you meet DVLA standards.\n\nDVLA RULES (${g === 1 ? 'CAR' : 'LORRY/BUS'}):\n${g === 1 ? '- Unexplained Blackout: Stop driving 6 months.\n- Simple Faint: Allowed if clear warning signs.' : '- Unexplained Blackout: Stop driving 12 months.'}\n\nLEGAL REQUIREMENT:\nCheck with your insurer. Notify DVLA if required.`
+                content: (g) => {
+                    if (g === 1) {
+                        return `MEDICAL DIAGNOSIS: Syncope / Blackout\n\nFITNESS TO DRIVE ADVICE (GROUP 1 - CAR):\n\nType A: Simple Faint (Vasovagal)\n- If you had clear warning signs (prodrome) and a known trigger (e.g. pain/standing), you may continue to drive. No restriction.\n\nType B: Unexplained Blackout\n- You must STOP driving for 6 months.\n- You must notify the DVLA if the cause remains unexplained.\n\nType C: Cough Syncope\n- You must STOP driving for 6 months.\n\nACTION:\nIf your blackout was unexplained, do not drive until you have been symptom-free for the required period.`;
+                    } else {
+                        return `MEDICAL DIAGNOSIS: Syncope / Blackout\n\nFITNESS TO DRIVE ADVICE (GROUP 2 - HGV/BUS):\n1. You must STOP driving immediately.\n2. You must notify the DVLA.\n\nTIMELINES:\n- Simple Faint: Allowed only if distinct warning signs present.\n- Unexplained Blackout: Stop driving for 12 months.\n- Cough Syncope: Stop driving for 12 months.\n\nACTION:\nNotify your employer immediately.`;
+                    }
+                }
             },
             stroke: {
                 title: "Fitness to Drive - Stroke/TIA",
-                content: (g) => `Following your diagnosis of Stroke/TIA:\n\nMEDICAL ADVICE:\nYou must NOT drive immediately.\n\nDVLA RULES (${g === 1 ? 'CAR' : 'LORRY/BUS'}):\n${g === 1 ? '- Stop driving for 1 month.\n- Only resume if fully recovered.' : '- Stop driving for 1 year.\n- Notify DVLA.'}`
+                content: (g) => {
+                    if (g === 1) {
+                        return `MEDICAL DIAGNOSIS: Stroke or TIA (Mini-stroke)\n\nFITNESS TO DRIVE ADVICE (GROUP 1 - CAR):\n\n1. Single TIA (Mini-stroke):\n   - Stop driving for 1 month.\n   - You do NOT need to notify the DVLA (unless you have residual defects).\n\n2. Multiple TIAs:\n   - Stop driving for 1 month.\n   - Notify DVLA if you have had multiple attacks recently.\n\n3. Stroke:\n   - Stop driving for 1 month.\n   - You do NOT need to notify the DVLA unless you still have weakness, visual issues, or confusion after 1 month.\n\nACTION:\nDo not drive for at least 30 days. Consult your GP before restarting.`;
+                    } else {
+                        return `MEDICAL DIAGNOSIS: Stroke or TIA\n\nFITNESS TO DRIVE ADVICE (GROUP 2 - HGV/BUS):\n1. You must STOP driving immediately.\n2. You are legally required to notify the DVLA.\n\nTIMELINES:\n- You must not drive for at least 1 year.\n- Re-licensing requires a functional assessment and cardiac testing.\n\nACTION:\nNotify your employer and the DVLA immediately.`;
+                    }
+                }
             },
             acs: {
                 title: "Fitness to Drive - Heart Condition",
-                content: (g) => `Following your heart event (ACS):\n\nMEDICAL ADVICE:\nStop driving temporarily to allow recovery.\n\nDVLA RULES (${g === 1 ? 'CAR' : 'LORRY/BUS'}):\n${g === 1 ? '- Angioplasty: Stop 1 week.\n- No Angioplasty: Stop 4 weeks.' : '- Stop driving 6 weeks.\n- Notify DVLA.'}`
+                content: (g) => {
+                    if (g === 1) {
+                        return `MEDICAL DIAGNOSIS: Acute Coronary Syndrome (Heart Attack/Angina)\n\nFITNESS TO DRIVE ADVICE (GROUP 1 - CAR):\n\n1. Angioplasty (Stents):\n   - Stop driving for 1 week (if successful and no other surgery needed).\n\n2. No Angioplasty:\n   - Stop driving for 4 weeks.\n\n3. Angina:\n   - You must not drive if you have symptoms at rest or while driving.\n\nACTION:\nEnsure you can perform an emergency stop comfortably before restarting. You do not need to notify the DVLA unless symptoms persist.`;
+                    } else {
+                        return `MEDICAL DIAGNOSIS: Acute Coronary Syndrome\n\nFITNESS TO DRIVE ADVICE (GROUP 2 - HGV/BUS):\n1. You must STOP driving immediately.\n2. You must notify the DVLA.\n\nTIMELINES:\n- Stop driving for at least 6 weeks.\n- You will require a functional test (LVEF >= 40%) before restarting.\n\nACTION:\nNotify your employer immediately.`;
+                    }
+                }
             },
             arrhythmia: {
                 title: "Fitness to Drive - Arrhythmia",
-                content: (g) => `Following your heart rhythm diagnosis:\n\nMEDICAL ADVICE:\nStop driving if you have symptoms.\n\nDVLA RULES (${g === 1 ? 'CAR' : 'LORRY/BUS'}):\n${g === 1 ? '- Pacemaker: Stop 1 week.\n- ICD: Stop 6 months.' : '- Pacemaker: Stop 6 weeks.\n- ICD: PERMANENT BAR.'}`
+                content: (g) => {
+                    if (g === 1) {
+                        return `MEDICAL DIAGNOSIS: Arrhythmia / Pacemaker / ICD\n\nFITNESS TO DRIVE ADVICE (GROUP 1 - CAR):\n\n- Pacemaker: Stop driving for 1 week after implantation.\n- ICD (Defibrillator): Stop driving for 6 months (if implanted for shock/therapy). Stop 1 month if for prevention only.\n- Arrhythmia: Stop driving for 4 weeks if the rhythm caused a blackout.\n\nACTION:\nNotify the DVLA if you have an ICD or incapacitating arrhythmia.`;
+                    } else {
+                        return `MEDICAL DIAGNOSIS: Arrhythmia / Pacemaker / ICD\n\nFITNESS TO DRIVE ADVICE (GROUP 2 - HGV/BUS):\n\n- Pacemaker: Stop driving for 6 weeks.\n- ICD (Defibrillator): PERMANENT BAR. You will likely be refused a Group 2 licence.\n- Arrhythmia: Stop driving until controlled (minimum 4 weeks).\n\nACTION:\nNotify your employer and the DVLA immediately.`;
+                    }
+                }
             },
             diabetes: {
                 title: "Fitness to Drive - Diabetes",
-                content: (g) => `Regarding your Diabetes:\n\nDVLA RULES (${g === 1 ? 'CAR' : 'LORRY/BUS'}):\n${g === 1 ? '- Notify DVLA if on Insulin.\n- Test blood sugar q2h while driving.' : '- Strict criteria apply. You must notify DVLA.'}`
+                content: (g) => {
+                    if (g === 1) {
+                        return `MEDICAL DIAGNOSIS: Diabetes Mellitus\n\nFITNESS TO DRIVE ADVICE (GROUP 1 - CAR):\n\n1. Insulin Therapy:\n   - You MUST notify the DVLA.\n   - You must check your blood glucose no more than 2 hours before driving and every 2 hours while driving.\n\n2. Tablets (Sulfonylureas):\n   - No restriction unless you have severe hypos.\n\n3. Hypoglycaemia:\n   - You must stop driving if you have more than 1 severe hypo (requiring help) in 12 months.\n\nACTION:\nAlways carry a glucose meter and fast-acting carbs in the car.`;
+                    } else {
+                        return `MEDICAL DIAGNOSIS: Diabetes Mellitus\n\nFITNESS TO DRIVE ADVICE (GROUP 2 - HGV/BUS):\n\n1. Insulin Therapy:\n   - You MUST notify the DVLA.\n   - Strict criteria apply: You must use a memory-enabled glucose meter for 3 months prior to application.\n\n2. Hypoglycaemia:\n   - You must have full awareness of hypoglycaemia.\n\nACTION:\nNotify your employer and the DVLA. Strict monitoring is required.`;
+                    }
+                }
             },
             substance: {
                 title: "Fitness to Drive - Alcohol/Drugs",
-                content: (g) => `Regarding Alcohol/Drug misuse:\n\nMEDICAL ADVICE:\nYou are currently unfit to drive.\n\nLEGAL REQUIREMENT:\nYou must stop driving and notify the DVLA immediately. Your licence will likely be revoked for ${g === 1 ? '6-12 months' : '1-3 years'}.`
+                content: (g) => {
+                    if (g === 1) {
+                        return `MEDICAL DIAGNOSIS: Alcohol/Drug Misuse or Dependence\n\nFITNESS TO DRIVE ADVICE (GROUP 1 - CAR):\n1. You must STOP driving immediately.\n2. You must notify the DVLA.\n\nTIMELINES:\n- Persistent Misuse: Licence revoked for min. 6 months.\n- Dependence: Licence revoked for min. 1 year.\n\nACTION:\nDo not drive until the DVLA confirms your medical standards are met.`;
+                    } else {
+                        return `MEDICAL DIAGNOSIS: Alcohol/Drug Misuse or Dependence\n\nFITNESS TO DRIVE ADVICE (GROUP 2 - HGV/BUS):\n1. You must STOP driving immediately.\n2. You must notify the DVLA.\n\nTIMELINES:\n- Persistent Misuse: Licence revoked for min. 1 year.\n- Dependence: Licence revoked for min. 3 years.\n\nACTION:\nNotify your employer immediately.`;
+                    }
+                }
             }
         };
 
