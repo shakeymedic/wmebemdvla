@@ -3,849 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DVLA Fitness to Drive | Clinical Dashboard Pro</title>
+    <title>DVLA Fitness to Drive | EM Decision Tool</title>
+    <meta name="description" content="DVLA fitness-to-drive standards for emergency medicine: blackouts, seizures, stroke, cardiac, diabetes, psychiatric, substance, vision and other conditions for Group 1 and Group 2 licences, with source links and discharge advice.">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/shakeymedic/wmem/main/emevidence_logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            /* Light Theme (Default) */
-            --primary: #0056b3;
-            --primary-dark: #003d80;
-            --bg-body: #f1f5f9;
-            --bg-card: #ffffff;
-            --bg-sidebar: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --input-bg: #ffffff;
-            
-            /* Risk Colors */
-            --risk-stop: #ef4444;  /* Red - Stop Driving */
-            --risk-warn: #f59e0b;  /* Amber - Conditional */
-            --risk-safe: #10b981;  /* Green - Safe/Check */
-            
-            --radius: 8px;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-
-        /* Dark Theme overrides */
-        [data-theme="dark"] {
-            --primary: #3b82f6;
-            --primary-dark: #60a5fa;
-            --bg-body: #0f172a;
-            --bg-card: #1e293b;
-            --bg-sidebar: #1e293b;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --border: #334155;
-            --input-bg: #0f172a;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
-        }
-
-        * { box-sizing: border-box; }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            line-height: 1.5;
-            display: flex;
-            min-height: 100vh;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        /* --- Sidebar Navigation --- */
-        .sidebar {
-            width: 260px;
-            background: var(--bg-sidebar);
-            border-right: 1px solid var(--border);
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            z-index: 900;
-            transition: transform 0.3s ease;
-        }
-
-        .logo-area { text-align: center; margin-bottom: 25px; }
-        .logo-area img { max-width: 100px; height: auto; }
-
-        .nav-links a {
-            display: block;
-            padding: 12px 15px;
-            color: var(--text-muted);
-            text-decoration: none;
-            border-radius: var(--radius);
-            margin-bottom: 5px;
-            font-size: 0.9em;
-            font-weight: 500;
-            transition: all 0.2s;
-            border-left: 3px solid transparent;
-        }
-
-        .nav-links a:hover, .nav-links a.active {
-            background-color: var(--bg-body);
-            color: var(--primary);
-            border-left-color: var(--primary);
-        }
-
-        .nav-category {
-            font-size: 0.7em;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            margin: 25px 0 10px 15px;
-            font-weight: 700;
-            opacity: 0.7;
-        }
-
-        /* --- Controls (Dark Mode / Licence Type) --- */
-        .controls-area {
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .toggle-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            font-size: 0.85em;
-            font-weight: 600;
-        }
-
-        /* Toggle Switch CSS */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 44px;
-            height: 24px;
-        }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #cbd5e1;
-            transition: .4s;
-            border-radius: 34px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        input:checked + .slider { background-color: var(--primary); }
-        input:checked + .slider:before { transform: translateX(20px); }
-
-        /* Group Toggle Specifics */
-        .group-toggle-container {
-            background: var(--bg-body);
-            padding: 4px;
-            border-radius: 20px;
-            display: flex;
-            margin-top: 10px;
-            border: 1px solid var(--border);
-        }
-        .group-btn {
-            flex: 1;
-            border: none;
-            background: none;
-            padding: 8px;
-            font-size: 0.75em;
-            font-weight: 700;
-            cursor: pointer;
-            border-radius: 16px;
-            color: var(--text-muted);
-            transition: 0.3s;
-        }
-        .group-btn.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        /* --- Main Content --- */
-        .main-content {
-            flex: 1;
-            margin-left: 260px;
-            padding: 30px 40px;
-            max-width: 1200px;
-            width: 100%;
-        }
-
-        header h1 { font-size: 1.8rem; margin: 0 0 5px 0; color: var(--text-main); }
-        header h2 { font-size: 1rem; font-weight: 400; color: var(--text-muted); margin: 0; }
-
-        .search-container {
-            margin-top: 25px;
-            position: relative;
-        }
-        .search-input {
-            width: 100%;
-            padding: 14px 20px 14px 50px;
-            border: 1px solid var(--border);
-            background: var(--bg-card);
-            color: var(--text-main);
-            border-radius: 50px;
-            font-size: 1rem;
-            box-shadow: var(--shadow);
-            outline: none;
-        }
-        .search-icon {
-            position: absolute;
-            left: 20px; top: 50%; transform: translateY(-50%);
-            color: var(--text-muted);
-        }
-
-        /* --- Alert Banner --- */
-        .banner {
-            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
-            border-left: 5px solid #f97316;
-            padding: 20px;
-            border-radius: var(--radius);
-            margin: 30px 0;
-            color: #9a3412;
-            display: flex;
-            gap: 15px;
-            align-items: flex-start;
-        }
-        [data-theme="dark"] .banner {
-            background: #431407;
-            color: #fdba74;
-            border-left-color: #fb923c;
-        }
-
-        /* --- Cards --- */
-        .section-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-top: 50px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 10px;
-        }
-        .section-title h3 { margin: 0; font-size: 1.3rem; color: var(--primary); }
-        .ext-link { font-size: 0.8em; color: var(--text-muted); text-decoration: none; }
-        .ext-link:hover { text-decoration: underline; color: var(--primary); }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
-        }
-
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 20px;
-            transition: transform 0.2s, box-shadow 0.2s;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-        }
-        .card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
-
-        /* Status Strip on Card Left */
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; bottom: 0; width: 4px;
-            background: var(--border); /* Default */
-        }
-        .card[data-status="stop"]::before { background: var(--risk-stop); }
-        .card[data-status="warn"]::before { background: var(--risk-warn); }
-
-        .card-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
-        .card-header h4 { margin: 0; font-size: 1.1rem; color: var(--text-main); }
-        .card-meta { font-size: 0.8rem; color: var(--text-muted); font-style: italic; margin-bottom: 15px; }
-
-        .guidance-text { font-size: 0.85rem; color: var(--text-main); flex-grow: 1; }
-        .guidance-text strong { color: var(--primary); font-weight: 600; }
-        .guidance-text ul { padding-left: 20px; margin: 5px 0 15px 0; }
-        .guidance-text li { margin-bottom: 4px; }
-        
-        .g2-only { display: none; background: rgba(245, 158, 11, 0.1); padding: 10px; border-radius: 4px; margin-top: 5px; }
-        .g1-only { display: block; }
-        
-        /* When Group 2 is Active */
-        body.mode-g2 .g2-only { display: block; }
-        body.mode-g2 .g1-only { display: none; }
-        body.mode-g2 .card[data-g2-ban="true"]::before { background: var(--risk-stop); }
-
-        .btn-action {
-            margin-top: 20px;
-            width: 100%;
-            padding: 10px;
-            background: var(--bg-body);
-            color: var(--primary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .btn-action:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        /* --- Modal --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(2px);
-            z-index: 2000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .modal {
-            background: var(--bg-card);
-            width: 100%;
-            max-width: 650px;
-            border-radius: 12px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-            display: flex;
-            flex-direction: column;
-            max-height: 90vh;
-        }
-        .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .modal-header h3 { margin: 0; color: var(--text-main); }
-        
-        .modal-body { padding: 20px; overflow-y: auto; }
-        
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 0.85em; color: var(--text-muted); margin-bottom: 5px; }
-        .input-group input { 
-            width: 100%; padding: 10px; 
-            border: 1px solid var(--border); 
-            background: var(--input-bg);
-            color: var(--text-main);
-            border-radius: 6px; 
-        }
-
-        .letter-preview {
-            background: var(--bg-body);
-            padding: 20px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            white-space: pre-wrap;
-            color: var(--text-main);
-        }
-
-        .modal-footer {
-            padding: 20px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
-        /* Hamburger Menu for Mobile */
-        .hamburger {
-            display: none;
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            z-index: 1000;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); width: 80%; }
-            .sidebar.open { transform: translateX(0); }
-            .main-content { margin-left: 0; padding: 20px; }
-            .hamburger { display: block; }
-            .section-title { flex-direction: column; align-items: flex-start; }
-            .modal-footer { flex-direction: column; }
-            .btn-action { width: 100%; }
-        }
-
-        @media print {
-            .sidebar, .hamburger, .controls-area, .modal-overlay, .btn-action, .search-container { display: none; }
-            .main-content { margin: 0; padding: 0; }
-            .card { break-inside: avoid; border: 1px solid #000; }
-            body { background: white; color: black; }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <button class="hamburger" onclick="toggleSidebar()">☰ Menu</button>
+    <button class="hamburger" id="hamburger" aria-controls="sidebar" aria-expanded="false">☰ Menu</button>
+    <div class="scrim" id="scrim" hidden></div>
 
-    <nav class="sidebar" id="sidebar">
+    <nav class="sidebar" id="sidebar" aria-label="Sections and settings">
         <div class="logo-area">
-            <img src="https://raw.githubusercontent.com/shakeymedic/wmem/main/emevidence_logo.png" alt="EMEvidence Logo">
+            <a href="https://emevidence.org" target="_blank" rel="noopener"><img src="https://raw.githubusercontent.com/shakeymedic/wmem/main/emevidence_logo.png" alt="EM Evidence logo" width="96" height="96"></a>
         </div>
 
         <div class="controls-area">
+            <div class="control-label" id="groupLabel">Licence group</div>
+            <div class="group-toggle-container" role="group" aria-labelledby="groupLabel">
+                <button class="group-btn active" id="btnG1" data-group="1" aria-pressed="true">Group 1</button>
+                <button class="group-btn" id="btnG2" data-group="2" aria-pressed="false">Group 2</button>
+                <button class="group-btn" id="btnBoth" data-group="both" aria-pressed="false">Both</button>
+            </div>
+            <div class="group-desc" id="groupDesc">Car and motorcycle</div>
+
             <div class="toggle-row">
-                <span>Dark Mode</span>
+                <span>Dark mode</span>
                 <label class="switch">
-                    <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
+                    <input type="checkbox" id="themeToggle" aria-label="Dark mode">
                     <span class="slider"></span>
                 </label>
             </div>
-            
-            <div style="font-size: 0.85em; font-weight: 600; margin-top: 15px;">Licence Type:</div>
-            <div class="group-toggle-container">
-                <button class="group-btn active" id="btnG1" onclick="setGroup(1)">🚗 Group 1</button>
-                <button class="group-btn" id="btnG2" onclick="setGroup(2)">🚛 Group 2</button>
-            </div>
-            <div style="font-size: 0.7em; color: var(--text-muted); margin-top: 5px; text-align: center;">
-                <span id="groupDesc">Car / Motorcycle</span>
-            </div>
         </div>
 
-        <div class="nav-links">
-            <div class="nav-category">Navigation</div>
-            <a href="#top" class="active">Dashboard</a>
-            <a href="#neuro">Neurology</a>
-            <a href="#cardio">Cardiology</a>
-            <a href="#endo">Endocrine</a>
-            <a href="#drugs">Substances</a>
+        <div class="nav-links" id="navLinks">
+            <div class="nav-category">Sections</div>
+            <a href="#principles">Key principles</a>
         </div>
     </nav>
 
     <main class="main-content" id="top">
         <header>
             <h1>DVLA Fitness to Drive</h1>
-            <h2>Clinical Decision Support Tool</h2>
-            
+            <h2>Emergency medicine decision tool for Group 1 and Group 2 licences</h2>
+
             <div class="search-container">
-                <span class="search-icon">🔍</span>
-                <input type="text" class="search-input" id="searchInput" placeholder="Search diagnosis (e.g. Seizure, TIA, Syncope)..." onkeyup="filterContent()">
+                <span class="search-icon" aria-hidden="true">🔍</span>
+                <input type="search" class="search-input" id="searchInput" placeholder="Search a diagnosis (e.g. seizure, syncope, NSTEMI, psychosis, overdose)" aria-label="Search conditions" autocomplete="off">
+            </div>
+            <div class="filter-row" role="group" aria-label="Filter by outcome">
+                <button class="chip active" data-filter="all" aria-pressed="true">All</button>
+                <button class="chip" data-filter="x" aria-pressed="false">✘ Must not drive</button>
+                <button class="chip" data-filter="notify" aria-pressed="false">Must notify DVLA</button>
+                <span class="result-count" id="resultCount" aria-live="polite"></span>
             </div>
         </header>
 
         <div class="banner">
-            <div style="font-size: 1.5em;">⚖️</div>
+            <div class="banner-icon" aria-hidden="true">⚖️</div>
             <div>
-                <strong>Legal Duty:</strong> The driver is legally responsible for notifying the DVLA. Your role is to <span style="text-decoration: underline;">advise</span> them of this duty and document it. Only notify DVLA directly if the patient cannot/will not and public safety is at risk.
+                <strong>Legal duty:</strong> the driver must tell DVLA about a relevant condition. Your role is to advise them of the driving rule and their duty to notify, and to record that advice. Notify DVLA yourself only if they cannot or will not, and public safety is at risk (GMC guidance, below).
             </div>
         </div>
 
-        <div class="section-title" id="neuro">
-            <h3>🧠 Neurological</h3>
-            <a href="https://www.gov.uk/guidance/neurological-disorders-assessing-fitness-to-drive" target="_blank" class="ext-link">Gov.uk Guidance ↗</a>
-        </div>
-        <div class="grid">
-            
-            <div class="card" data-status="stop" data-g2-ban="true">
-                <div class="card-header">
-                    <h4>Seizures / Epilepsy</h4>
-                </div>
-                <div class="card-meta">First Fit, Provoked, Epilepsy</div>
-                <div class="guidance-text">
-                    <div class="g1-only">
-                        <ul>
-                            <li><strong>First Unprovoked:</strong> Stop driving 6 months. 12 months if there is an underlying cause that may increase the risk. Notify DVLA.</li>
-                            <li><strong>Epilepsy (2+ seizures):</strong> Stop driving 12 months from the most recent seizure. Notify DVLA.</li>
-                            <li><strong>Provoked:</strong> Usually stop driving 6 months (e.g. acute illness, alcohol or drug intoxication or withdrawal). Notify DVLA.</li>
-                            <li><strong>Sleep Only:</strong> May drive if a pattern of seizures only ever while asleep has been established for at least 1 year.</li>
-                        </ul>
-                    </div>
-                    <div class="g2-only">
-                        <ul>
-                            <li><strong>First Unprovoked:</strong> Stop driving 5 years, off epilepsy medication, with a neurologist assessment showing seizure risk no more than 2% a year.</li>
-                            <li><strong>Epilepsy:</strong> Stop driving 10 years. (Must be seizure-free and off meds for 10 years).</li>
-                            <li><strong>Provoked:</strong> Stop driving for up to 5 years. Notify DVLA.</li>
-                        </ul>
-                    </div>
-                </div>
-                <button class="btn-action" onclick="openLetter('seizure')">📄 Generate Discharge Letter</button>
-            </div>
-
-            <div class="card" data-status="warn">
-                <div class="card-header">
-                    <h4>Blackout / Syncope (TLoC)</h4>
-                </div>
-                <div class="card-meta">Vasovagal, Unexplained, Cough Syncope</div>
-                <div class="guidance-text">
-                    <div class="g1-only">
-                        <ul>
-                            <li><strong>Simple Faint (Vasovagal), reliable prodrome:</strong> Not while driving: may drive, no need to notify. While driving: stop driving 1 month, no need to notify.</li>
-                            <li><strong>Simple Faint, 2+ in 24 months:</strong> If any occurred while driving: stop driving 3 months from the most recent and notify DVLA.</li>
-                            <li><strong>Unexplained (no seizure markers):</strong> Stop driving 6 months and notify DVLA. Multiple episodes: 12 months.</li>
-                            <li><strong>Seizure markers</strong> (e.g. LOC &gt;5 min, injury, tongue biting): stop driving 6 months (12 if higher recurrence risk) and notify DVLA.</li>
-                            <li><strong>Cough Syncope:</strong> Stop driving 6 months (12 months if multiple episodes over 5 years).</li>
-                            <li><strong>Cause found:</strong> Apply the rule for that condition instead.</li>
-                        </ul>
-                    </div>
-                    <div class="g2-only">
-                        <ul>
-                            <li><strong>Simple Faint:</strong> Must notify DVLA. Avoidable trigger and not while driving: may drive after recovery. Otherwise stop driving 3 months (6 months if 2+ in 24 months), with a specialist report.</li>
-                            <li><strong>Unexplained:</strong> Stop driving 12 months and notify DVLA. Multiple episodes: 5 years.</li>
-                            <li><strong>Seizure markers:</strong> Stop driving 5 years and notify DVLA.</li>
-                            <li><strong>Cough Syncope:</strong> Stop driving 12 months (5 years if multiple episodes over 5 years).</li>
-                        </ul>
-                    </div>
-                </div>
-                <button class="btn-action" onclick="openLetter('tloc')">📄 Generate Discharge Letter</button>
-            </div>
-
-            <div class="card" data-status="stop">
-                <div class="card-header">
-                    <h4>Stroke & TIA</h4>
-                </div>
-                <div class="card-meta">CVA, Mini-stroke, Amaurosis Fugax</div>
-                <div class="guidance-text">
-                    <div class="g1-only">
-                        <ul>
-                            <li><strong>Single TIA:</strong> Stop driving 1 month. DO NOT notify DVLA.</li>
-                            <li><strong>Multiple TIAs:</strong> Stop driving 1 month after each episode.</li>
-                            <li><strong>Stroke:</strong> Stop driving 1 month; may resume if satisfactory recovery. Notify DVLA <em>only if</em> residual deficit (e.g. visual field, cognitive, limb function) remains at 1 month.</li>
-                        </ul>
-                    </div>
-                    <div class="g2-only">
-                        <ul>
-                            <li><strong>All Stroke/TIA:</strong> Stop driving 1 year.</li>
-                            <li><strong>Notification:</strong> You MUST notify DVLA.</li>
-                            <li><strong>Re-licensing:</strong> No debarring residual impairment and no other significant risk factors. A medical report (which may include exercise ECG) can be needed; recurrent TIAs or strokes need functional cardiac testing.</li>
-                        </ul>
-                    </div>
-                </div>
-                <button class="btn-action" onclick="openLetter('stroke')">📄 Generate Discharge Letter</button>
-            </div>
+        <div class="legend" aria-label="Key">
+            <span><span class="sym sym-x">✘</span> Must not drive</span>
+            <span><span class="sym sym-warn">!</span> May drive subject to medical advice and/or notifying DVLA</span>
+            <span><span class="sym sym-ok">✓</span> May drive and need not notify DVLA</span>
         </div>
 
-        <div class="section-title" id="cardio">
-            <h3>🫀 Cardiovascular</h3>
-            <a href="https://www.gov.uk/guidance/cardiovascular-disorders-assessing-fitness-to-drive" target="_blank" class="ext-link">Gov.uk Guidance ↗</a>
-        </div>
-        <div class="grid">
-            
-            <div class="card" data-status="stop">
-                <div class="card-header">
-                    <h4>ACS / Angina / Angioplasty</h4>
-                </div>
-                <div class="card-meta">MI, NSTEMI, Stent</div>
-                <div class="guidance-text">
-                    <div class="g1-only">
+        <section class="principles" id="principles">
+            <details>
+                <summary><h3>Key principles, notifying DVLA and GMC guidance</h3></summary>
+                <div class="principles-grid">
+                    <div>
+                        <h4>Licence groups</h4>
                         <ul>
-                            <li><strong>Angioplasty (Stent):</strong> Stop driving 1 week if successful PCI and LVEF ≥40% before discharge.</li>
-                            <li><strong>No Angioplasty:</strong> Stop driving 4 weeks.</li>
-                            <li><strong>Angina:</strong> Must not drive when symptoms occur at rest, with emotion or at the wheel; may resume once controlled.</li>
-                            <li><strong>Notify DVLA:</strong> Not needed for ACS or angina.</li>
+                            <li><strong>Group 1:</strong> cars and motorcycles.</li>
+                            <li><strong>Group 2:</strong> large lorries (C) and buses (D). Car licences issued before 1 January 1997 also carry C1 (medium lorry) and D1 (minibus) entitlement; Group 2 standards apply to these on renewal.</li>
+                            <li>Police, ambulance, fire and taxi drivers hold the same licences; employers and councils may set higher standards.</li>
+                        </ul>
+                        <h4>Risk thresholds</h4>
+                        <ul>
+                            <li>A condition likely to cause a sudden disabling event at the wheel means the person must not drive.</li>
+                            <li>DVLA's thresholds: <strong>20%</strong> risk of an event in a year for Group 1, <strong>2%</strong> for Group 2.</li>
+                        </ul>
+                        <h4>The 3-month rule</h4>
+                        <ul>
+                            <li>Drivers generally need not notify DVLA of conditions where clinical advice is less than 3 months off driving, unless a specific standard says otherwise.</li>
                         </ul>
                     </div>
-                    <div class="g2-only">
+                    <div>
+                        <h4>How the patient notifies</h4>
                         <ul>
-                            <li><strong>All Events:</strong> Stop driving 6 weeks minimum.</li>
-                            <li><strong>Requirement:</strong> Functional test (LVEF ≥40%) required before restart.</li>
-                            <li><strong>Notification:</strong> MUST notify DVLA.</li>
+                            <li>England, Scotland and Wales: <a href="https://www.gov.uk/driving-medical-conditions" target="_blank" rel="noopener">gov.uk/driving-medical-conditions</a>.</li>
+                            <li>Northern Ireland (DVA): <a href="https://www.nidirect.gov.uk/articles/how-tell-dva-about-medical-condition" target="_blank" rel="noopener">nidirect.gov.uk</a>.</li>
+                            <li>Driving against medical advice may invalidate their insurance. Record the advice clearly.</li>
+                            <li>A licence holder may keep their entitlement to drive under Section 88 while DVLA makes enquiries (not if their last licence was revoked or refused on medical grounds). The treating doctor should advise whether it is safe to drive in the meantime.</li>
+                        </ul>
+                        <h4>Advice for clinicians</h4>
+                        <ul>
+                            <li>DVLA's doctors: <a href="mailto:medadviser@dvla.gov.uk">medadviser@dvla.gov.uk</a> (healthcare professionals only).</li>
+                            <li><a href="https://www.gov.uk/government/publications/medical-notification-fitness-to-drive" target="_blank" rel="noopener">Medical notification form</a> for when a patient cannot or will not notify.</li>
                         </ul>
                     </div>
+                    <div>
+                        <h4>GMC: when a patient keeps driving</h4>
+                        <ol>
+                            <li>Explain the condition's effect on driving and their legal duty to tell DVLA.</li>
+                            <li>Tell them you may have to disclose to DVLA, in confidence, if they keep driving when unfit.</li>
+                            <li>Record the advice in their notes.</li>
+                            <li>If they cannot understand the advice (for example dementia), inform DVLA as soon as practicable.</li>
+                            <li>If they refuse to accept it, offer a second opinion and advise them not to drive meanwhile.</li>
+                            <li>If they continue to drive and this exposes others to a risk of death or serious harm, contact DVLA's medical adviser promptly. Try to tell the patient first, and confirm in writing afterwards.</li>
+                        </ol>
+                        <p class="small"><a href="https://www.gmc-uk.org/ethical-guidance/ethical-guidance-for-doctors/confidentiality---patients-fitness-to-drive-and-reporting-concerns-to-the-dvla-or-dva" target="_blank" rel="noopener">GMC confidentiality guidance ↗</a> · <a href="https://www.gov.uk/guidance/general-information-assessing-fitness-to-drive" target="_blank" rel="noopener">DVLA general information ↗</a></p>
+                    </div>
                 </div>
-                <button class="btn-action" onclick="openLetter('acs')">📄 Generate Discharge Letter</button>
-            </div>
+            </details>
+        </section>
 
-            <div class="card" data-status="warn">
-                <div class="card-header">
-                    <h4>Arrhythmia / Devices</h4>
-                </div>
-                <div class="card-meta">AF, Pacemaker, ICD</div>
-                <div class="guidance-text">
-                    <div class="g1-only">
-                        <ul>
-                            <li><strong>Pacemaker:</strong> Stop driving 1 week post-implant. Notify DVLA (box change: no need to notify).</li>
-                            <li><strong>ICD (Defib):</strong> Notify DVLA. Stop 6 months if implanted for sustained ventricular arrhythmia; 1 month if prophylactic.</li>
-                            <li><strong>Arrhythmia:</strong> Stop at least 4 weeks if it caused or is likely to cause incapacity. Notify DVLA.</li>
-                        </ul>
-                    </div>
-                    <div class="g2-only">
-                        <ul>
-                            <li><strong>Pacemaker:</strong> Stop driving 6 weeks. Notify DVLA.</li>
-                            <li><strong>ICD (Defib):</strong> <strong>PERMANENT BAR</strong> (Licence Refused/Revoked).</li>
-                            <li><strong>Arrhythmia:</strong> If it caused or is likely to cause incapacity: licence refused/revoked; relicensing after 3 months with no further incapacitating arrhythmia and LVEF ≥40%. Notify DVLA.</li>
-                        </ul>
-                    </div>
-                </div>
-                <button class="btn-action" onclick="openLetter('arrhythmia')">📄 Generate Discharge Letter</button>
-            </div>
-        </div>
+        <div id="conditionList"></div>
 
-        <div class="section-title" id="endo">
-            <h3>🩸 Diabetes & Endo</h3>
-        </div>
-        <div class="grid">
-            <div class="card" data-status="warn">
-                <div class="card-header">
-                    <h4>Diabetes</h4>
-                </div>
-                <div class="card-meta">Insulin, Sulfonylureas, Hypo</div>
-                <div class="guidance-text">
-                    <div class="g1-only">
-                        <ul>
-                            <li><strong>Insulin:</strong> Notify DVLA. Test glucose within 2 hours before driving and at least every 2 hours while driving. CGM users must carry a finger-prick meter as back-up.</li>
-                            <li><strong>Tablets:</strong> No restriction usually (unless prone to severe hypos).</li>
-                            <li><strong>Severe Hypo:</strong> Must not drive after 2 or more episodes while awake in 12 months (and the most recent must be over 3 months ago). Episodes during established sleep don't count.</li>
-                            <li><strong>Impaired awareness / hypo while driving:</strong> Must not drive and must notify DVLA.</li>
-                        </ul>
-                    </div>
-                    <div class="g2-only">
-                        <ul>
-                            <li><strong>Insulin:</strong> Notify DVLA. Strict annual review. Test at least twice daily (including non-driving days), before driving and every 2 hours while driving. CGM users must carry a finger-prick meter as back-up.</li>
-                            <li><strong>Hypoglycaemia:</strong> Full awareness required. No severe hypos in 12 months; report all episodes needing another person's help, including in sleep.</li>
-                        </ul>
-                    </div>
-                </div>
-                <button class="btn-action" onclick="openLetter('diabetes')">📄 Generate Discharge Letter</button>
-            </div>
-        </div>
-        
-        <div class="section-title" id="drugs">
-            <h3>💊 Substances</h3>
-        </div>
-        <div class="grid">
-            <div class="card" data-status="stop">
-                <div class="card-header">
-                    <h4>Alcohol & Drugs</h4>
-                </div>
-                <div class="card-meta">Dependence vs Misuse</div>
-                <div class="guidance-text">
-                    <div class="g1-only">
-                        <ul>
-                            <li><strong>Alcohol misuse:</strong> 6 months controlled drinking or abstinence.</li>
-                            <li><strong>Alcohol dependence:</strong> 1 year abstinence.</li>
-                            <li><strong>Cannabis, MDMA, amphetamines:</strong> 6 months free of misuse/dependence.</li>
-                            <li><strong>Cocaine, heroin/opiates/methadone:</strong> 1 year free of misuse/dependence (methadone/buprenorphine programmes have separate rules).</li>
-                        </ul>
-                    </div>
-                    <div class="g2-only">
-                        <ul>
-                            <li><strong>Alcohol misuse:</strong> 1 year controlled drinking or abstinence.</li>
-                            <li><strong>Alcohol dependence:</strong> 3 years abstinence.</li>
-                            <li><strong>Cannabis, MDMA, amphetamines:</strong> 1 year free of misuse/dependence.</li>
-                            <li><strong>Cocaine, heroin/opiates/methadone:</strong> 3 years free of misuse/dependence.</li>
-                        </ul>
-                    </div>
-                    <p style="font-size: 0.8em; margin-top:5px;"><em>"Misuse" = adverse consequences. "Dependence" = addiction/withdrawal.</em></p>
-                </div>
-                <button class="btn-action" onclick="openLetter('substance')">📄 Generate Discharge Letter</button>
-            </div>
-        </div>
+        <p class="no-results" id="noResults" hidden>No matching condition. Try another term, or check the <a href="https://www.gov.uk/guidance/assessing-fitness-to-drive-a-guide-for-medical-professionals" target="_blank" rel="noopener">full DVLA guide</a>. If a condition is not listed in the guide, the general rule applies: a condition likely to affect safe driving must be notified.</p>
 
-        <p style="font-size: 0.8em; color: var(--text-muted); text-align: center; margin: 30px 0 10px;">Checked against DVLA <a href="https://www.gov.uk/guidance/assessing-fitness-to-drive-a-guide-for-medical-professionals" target="_blank">Assessing fitness to drive</a> (updated 7 November 2025). Educational aid to support, not replace, clinical judgement. Always follow local trust guidance.</p>
-
+        <footer class="site-footer">
+            <p>Condensed from DVLA <a href="https://www.gov.uk/guidance/assessing-fitness-to-drive-a-guide-for-medical-professionals" target="_blank" rel="noopener">Assessing fitness to drive: a guide for medical professionals</a>, <span id="editionText"></span>. Content checked against GOV.UK on <span id="checkedText"></span>. Each card links to its source section; where this tool has simplified or interpreted the guide, the card says so.</p>
+            <p>Educational aid to support, not replace, clinical judgement. Always check the source for an individual patient and follow local trust guidance. For a printable summary, see the <a href="https://dvlaemposter.netlify.app" target="_blank" rel="noopener">DVLA A3 poster</a>.</p>
+        </footer>
     </main>
 
-    <div class="modal-overlay" id="letterModal" onclick="if(event.target === this) closeModal()">
-        <div class="modal">
+    <div class="modal-overlay" id="letterModal" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
             <div class="modal-header">
-                <h3>Generate Discharge Letter</h3>
-                <button onclick="closeModal()" style="border:none;background:none;font-size:1.5em;cursor:pointer;">&times;</button>
+                <h3 id="modalTitle">Driving advice</h3>
+                <button class="icon-btn" id="closeModal" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                <div class="input-group">
+                    <label for="scenarioSelect">Situation</label>
+                    <select id="scenarioSelect"></select>
+                </div>
+                <div class="input-group">
+                    <label for="letterGroup">Licence group</label>
+                    <select id="letterGroup">
+                        <option value="1">Group 1 (car and motorcycle)</option>
+                        <option value="2">Group 2 (lorry and bus)</option>
+                    </select>
+                </div>
+                <div class="form-grid">
                     <div class="input-group">
-                        <label>Patient Name</label>
-                        <input type="text" id="ptName" placeholder="e.g. John Doe" oninput="updateLetterPreview()">
+                        <label for="ptName">Patient name</label>
+                        <input type="text" id="ptName" autocomplete="off">
                     </div>
                     <div class="input-group">
-                        <label>NHS/Hospital No.</label>
-                        <input type="text" id="ptId" placeholder="e.g. 12345678" oninput="updateLetterPreview()">
+                        <label for="ptId">NHS or hospital number</label>
+                        <input type="text" id="ptId" autocomplete="off">
                     </div>
                 </div>
                 <div class="input-group">
-                    <label>Responsible Clinician</label>
-                    <input type="text" id="clinicianName" placeholder="Dr..." oninput="updateLetterPreview()">
+                    <label for="clinicianName">Clinician</label>
+                    <input type="text" id="clinicianName" placeholder="Dr ..." autocomplete="off">
                 </div>
-                
-                <div class="letter-preview" id="letterText">
-                    </div>
+                <p class="small muted">Nothing you type here is saved or sent anywhere.</p>
+                <div class="tabs" role="tablist">
+                    <button class="tab active" role="tab" aria-selected="true" data-view="letter">Patient letter</button>
+                    <button class="tab" role="tab" aria-selected="false" data-view="notes">Clinical notes entry</button>
+                </div>
+                <pre class="letter-preview" id="letterText"></pre>
             </div>
             <div class="modal-footer">
-                <button class="btn-action" style="margin:0; width:auto;" onclick="copyToClipboard()">📋 Copy</button>
-                <button class="btn-action" style="margin:0; width:auto; background:var(--primary); color:white;" onclick="printLetter()">🖨️ Print</button>
+                <button class="btn-secondary" id="copyBtn">📋 Copy</button>
+                <button class="btn-primary" id="printBtn">🖨️ Print</button>
             </div>
         </div>
     </div>
 
-    <script>
-        // --- State Management ---
-        let currentGroup = 1;
-        let currentTemplate = '';
-
-        // --- Templates ---
-        const templates = {
-            seizure: {
-                title: "Fitness to Drive - Seizure",
-                content: (g) => {
-                    if (g === 1) {
-                        return `MEDICAL DIAGNOSIS: Seizure / Epilepsy\n\nFITNESS TO DRIVE ADVICE (GROUP 1 - CAR):\n1. You must STOP driving immediately.\n2. You are legally required to notify the DVLA of your condition.\n\nTIMELINES:\n- First Unprovoked Seizure: You must not drive for 6 months, or 12 months if there is an underlying cause that may increase the risk of another seizure.\n- Established Epilepsy: You must be seizure-free for 1 year before re-licensing.\n- Provoked Seizure (for example during an acute illness, or linked to alcohol or drugs): usually you must not drive for 6 months.\n\nACTION:\nDo not drive until the DVLA confirms your licence is valid. Failure to notify the DVLA is a criminal offence and invalidates your insurance.`;
-                    } else {
-                        return `MEDICAL DIAGNOSIS: Seizure / Epilepsy\n\nFITNESS TO DRIVE ADVICE (GROUP 2 - HGV/BUS):\n1. You must STOP driving immediately.\n2. You are legally required to notify the DVLA.\n\nTIMELINES:\n- First Unprovoked Seizure: You are likely barred from Group 2 driving for 5 years (off epilepsy medication, with a specialist assessment).\n- Provoked Seizure: You may be barred for up to 5 years.\n- Epilepsy: You are likely barred for 10 years (must be 10 years off medication).\n\nACTION:\nNotify your employer and the DVLA immediately.`;
-                    }
-                }
-            },
-            tloc: {
-                title: "Fitness to Drive - Blackout",
-                content: (g) => {
-                    if (g === 1) {
-                        return `MEDICAL DIAGNOSIS: Syncope / Blackout\n\nFITNESS TO DRIVE ADVICE (GROUP 1 - CAR):\n\nType A: Simple Faint (Vasovagal)\n- If you had clear warning signs (prodrome) and it did not happen while driving, you may continue to drive and do not need to tell the DVLA.\n- If it happened while driving, you must not drive for 1 month. You do not need to tell the DVLA.\n- If you have had 2 or more faints in 24 months and one happened while driving, you must not drive for 3 months and must tell the DVLA.\n\nType B: Unexplained Blackout\n- You must STOP driving for 6 months (12 months if you have had more than one).\n- You must notify the DVLA.\n\nType C: Cough Syncope\n- You must STOP driving for 6 months (12 months if you have had more than one in 5 years).\n\nACTION:\nIf your blackout was unexplained, do not drive until you have been symptom-free for the required period.`;
-                    } else {
-                        return `MEDICAL DIAGNOSIS: Syncope / Blackout\n\nFITNESS TO DRIVE ADVICE (GROUP 2 - HGV/BUS):\n1. You must notify the DVLA.\n2. Whether, and for how long, you must stop driving depends on the type of blackout:\n\nTIMELINES:\n- Simple Faint: If there was a clear, avoidable trigger and it did not happen while driving, you may drive once recovered. Otherwise you must not drive for 3 months (6 months if you have had 2 or more in 24 months), and a specialist report is needed.\n- Unexplained Blackout: Stop driving for 12 months (5 years if you have had more than one).\n- Cough Syncope: Stop driving for 12 months (5 years if you have had more than one in 5 years).\n\nACTION:\nNotify your employer immediately.`;
-                    }
-                }
-            },
-            stroke: {
-                title: "Fitness to Drive - Stroke/TIA",
-                content: (g) => {
-                    if (g === 1) {
-                        return `MEDICAL DIAGNOSIS: Stroke or TIA (Mini-stroke)\n\nFITNESS TO DRIVE ADVICE (GROUP 1 - CAR):\n\n1. Single TIA (Mini-stroke):\n   - Stop driving for 1 month.\n   - You do NOT need to notify the DVLA (unless you have residual defects).\n\n2. Multiple TIAs:\n   - Stop driving for 1 month after each episode.\n\n3. Stroke:\n   - Stop driving for 1 month.\n   - You do NOT need to notify the DVLA unless you still have weakness, visual issues, or confusion after 1 month.\n\nACTION:\nDo not drive for at least 30 days. Consult your GP before restarting.`;
-                    } else {
-                        return `MEDICAL DIAGNOSIS: Stroke or TIA\n\nFITNESS TO DRIVE ADVICE (GROUP 2 - HGV/BUS):\n1. You must STOP driving immediately.\n2. You are legally required to notify the DVLA.\n\nTIMELINES:\n- You must not drive for at least 1 year.\n- Re-licensing requires that you have no significant lasting effects. You may need a medical report (which may include an exercise ECG); repeated TIAs or strokes need heart testing.\n\nACTION:\nNotify your employer and the DVLA immediately.`;
-                    }
-                }
-            },
-            acs: {
-                title: "Fitness to Drive - Heart Condition",
-                content: (g) => {
-                    if (g === 1) {
-                        return `MEDICAL DIAGNOSIS: Acute Coronary Syndrome (Heart Attack/Angina)\n\nFITNESS TO DRIVE ADVICE (GROUP 1 - CAR):\n\n1. Angioplasty (Stents):\n   - Stop driving for 1 week (if successful, your heart pump function (LVEF) is at least 40%, and no other procedure is planned).\n\n2. No Angioplasty:\n   - Stop driving for 4 weeks.\n\n3. Angina:\n   - You must not drive if you have symptoms at rest or while driving.\n\nACTION:\nEnsure you can perform an emergency stop comfortably before restarting. You do not need to notify the DVLA.`;
-                    } else {
-                        return `MEDICAL DIAGNOSIS: Acute Coronary Syndrome\n\nFITNESS TO DRIVE ADVICE (GROUP 2 - HGV/BUS):\n1. You must STOP driving immediately.\n2. You must notify the DVLA.\n\nTIMELINES:\n- Stop driving for at least 6 weeks.\n- You will require a functional test (LVEF >= 40%) before restarting.\n\nACTION:\nNotify your employer immediately.`;
-                    }
-                }
-            },
-            arrhythmia: {
-                title: "Fitness to Drive - Arrhythmia",
-                content: (g) => {
-                    if (g === 1) {
-                        return `MEDICAL DIAGNOSIS: Arrhythmia / Pacemaker / ICD\n\nFITNESS TO DRIVE ADVICE (GROUP 1 - CAR):\n\n- Pacemaker: Stop driving for 1 week after implantation.\n- ICD (Defibrillator): Stop driving for 6 months if it was fitted after a dangerous heart rhythm, or 1 month if fitted for prevention only.\n- Arrhythmia: Stop driving for at least 4 weeks if the rhythm caused, or could cause, a blackout or collapse.\n\nACTION:\nNotify the DVLA if you have a new pacemaker, an ICD or an arrhythmia that caused (or could cause) a blackout.`;
-                    } else {
-                        return `MEDICAL DIAGNOSIS: Arrhythmia / Pacemaker / ICD\n\nFITNESS TO DRIVE ADVICE (GROUP 2 - HGV/BUS):\n\n- Pacemaker: Stop driving for 6 weeks.\n- ICD (Defibrillator): PERMANENT BAR. You will likely be refused a Group 2 licence.\n- Arrhythmia: If it caused (or could cause) a blackout, your licence will be refused or revoked. Re-licensing is possible after 3 months with no further episodes and good heart pump function (LVEF at least 40%).\n\nACTION:\nNotify your employer and the DVLA immediately.`;
-                    }
-                }
-            },
-            diabetes: {
-                title: "Fitness to Drive - Diabetes",
-                content: (g) => {
-                    if (g === 1) {
-                        return `MEDICAL DIAGNOSIS: Diabetes Mellitus\n\nFITNESS TO DRIVE ADVICE (GROUP 1 - CAR):\n\n1. Insulin Therapy:\n   - You MUST notify the DVLA.\n   - You must check your blood glucose no more than 2 hours before driving and every 2 hours while driving.\n\n2. Tablets (Sulfonylureas):\n   - No restriction unless you have severe hypos.\n\n3. Hypoglycaemia:\n   - You must stop driving and tell the DVLA if you have 2 or more severe hypos (needing someone else's help) while awake in 12 months.\n   - You must stop driving and tell the DVLA if you lose your warning signs of hypos, or have a severe hypo while driving.\n\nACTION:\nAlways carry a glucose meter and fast-acting carbs in the car.`;
-                    } else {
-                        return `MEDICAL DIAGNOSIS: Diabetes Mellitus\n\nFITNESS TO DRIVE ADVICE (GROUP 2 - HGV/BUS):\n\n1. Insulin Therapy:\n   - You MUST notify the DVLA.\n   - Strict criteria apply: You must use a memory-enabled glucose meter for 3 months prior to application.\n\n2. Hypoglycaemia:\n   - You must have full awareness of hypoglycaemia.\n   - You must have had no severe hypos (needing someone else's help) in the last 12 months, and must report every severe hypo to the DVLA, including during sleep.\n\nACTION:\nNotify your employer and the DVLA. Strict monitoring is required.`;
-                    }
-                }
-            },
-            substance: {
-                title: "Fitness to Drive - Alcohol/Drugs",
-                content: (g) => {
-                    if (g === 1) {
-                        return `MEDICAL DIAGNOSIS: Alcohol/Drug Misuse or Dependence\n\nFITNESS TO DRIVE ADVICE (GROUP 1 - CAR):\n1. You must STOP driving immediately.\n2. You must notify the DVLA.\n\nTIMELINES (minimum):\n- Alcohol misuse: 6 months of controlled drinking or abstinence.\n- Alcohol dependence: 1 year of abstinence.\n- Cannabis, MDMA or amphetamines: 6 months free of misuse.\n- Cocaine, heroin or other opiates: 1 year free of misuse.\n\nACTION:\nDo not drive until the DVLA confirms your medical standards are met.`;
-                    } else {
-                        return `MEDICAL DIAGNOSIS: Alcohol/Drug Misuse or Dependence\n\nFITNESS TO DRIVE ADVICE (GROUP 2 - HGV/BUS):\n1. You must STOP driving immediately.\n2. You must notify the DVLA.\n\nTIMELINES (minimum):\n- Alcohol misuse: 1 year of controlled drinking or abstinence.\n- Alcohol dependence: 3 years of abstinence.\n- Cannabis, MDMA or amphetamines: 1 year free of misuse.\n- Cocaine, heroin or other opiates: 3 years free of misuse.\n\nACTION:\nNotify your employer immediately.`;
-                    }
-                }
-            }
-        };
-
-        // --- Functions ---
-        function toggleTheme() {
-            const body = document.body;
-            const isDark = document.getElementById('themeToggle').checked;
-            body.setAttribute('data-theme', isDark ? 'dark' : 'light');
-        }
-
-        function setGroup(group) {
-            currentGroup = group;
-            document.body.className = group === 2 ? 'mode-g2' : '';
-            
-            document.getElementById('btnG1').className = group === 1 ? 'group-btn active' : 'group-btn';
-            document.getElementById('btnG2').className = group === 2 ? 'group-btn active' : 'group-btn';
-            document.getElementById('groupDesc').textContent = group === 1 ? 'Car / Motorcycle' : 'Lorry / Bus (HGV/PSV)';
-            
-            // Re-render open modal if active
-            if(document.getElementById('letterModal').style.display === 'flex') {
-                updateLetterPreview();
-            }
-        }
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-        }
-
-        function filterContent() {
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            document.querySelectorAll('.card').forEach(card => {
-                const text = card.textContent.toLowerCase();
-                card.style.display = text.includes(term) ? 'flex' : 'none';
-            });
-        }
-
-        // --- Modal Logic ---
-        function openLetter(type) {
-            currentTemplate = type;
-            document.getElementById('letterModal').style.display = 'flex';
-            updateLetterPreview();
-        }
-
-        function closeModal() {
-            document.getElementById('letterModal').style.display = 'none';
-        }
-
-        function updateLetterPreview() {
-            if (!currentTemplate) return;
-            
-            const ptName = document.getElementById('ptName').value || '[Patient Name]';
-            const ptId = document.getElementById('ptId').value || '[ID]';
-            const doc = document.getElementById('clinicianName').value || '[Doctor Name]';
-            const date = new Date().toLocaleDateString('en-GB');
-            
-            const bodyText = templates[currentTemplate].content(currentGroup);
-            
-            const fullText = `DISCHARGE ADVICE: FITNESS TO DRIVE\nDate: ${date}\n\nPatient: ${ptName} (ID: ${ptId})\nClinician: ${doc}\n\n${bodyText}\n\nFor full details, visit: www.gov.uk/driving-medical-conditions`;
-            
-            document.getElementById('letterText').textContent = fullText;
-        }
-
-        function copyToClipboard() {
-            const text = document.getElementById('letterText').textContent;
-            navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
-        }
-
-        function printLetter() {
-            const text = document.getElementById('letterText').textContent;
-            const win = window.open('','','width=800,height=600');
-            win.document.write(`<pre style="font-family:Courier; padding:40px; white-space:pre-wrap;">${text}</pre>`);
-            win.document.close();
-            win.print();
-        }
-    </script>
+    <script src="conditions.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
